@@ -3,7 +3,7 @@ const QUANTITY_CARDS = 3;
 
 const createMenuTemplate = () => {
   return (
-      `<section class="control__btn-wrap">
+    `<section class="control__btn-wrap">
           <input
             type="radio"
             name="control"
@@ -365,13 +365,13 @@ const createTaskCardTemplate = () => {
 const createLoadButton = () => {
   return (
     `<button class="load-more" type="button">load more</button>`
-  )
-}
+  );
+};
 
 
 const renderElement = (container, template, place = `beforeend`) => {
   container.insertAdjacentHTML(place, template);
-}
+};
 
 const main = document.querySelector(`.main`);
 const mainControl = main.querySelector(`.main__control`);
