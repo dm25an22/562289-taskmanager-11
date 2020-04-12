@@ -1,9 +1,7 @@
 import {taskData} from "./task";
-
-const filterTitles = [`all`, `overdue`, `today`, `favorites`, `repeating`, `archive`];
+import {FILTRT_TITLES} from "../const";
 
 const taskDataCards = taskData.slice(1);
-
 
 const counterFilters = {
   all: taskDataCards.length,
@@ -37,5 +35,5 @@ const renderMockData = (filters) => {
   });
 };
 
-export const filterMock = renderMockData(filterTitles);
+export const filterMock = renderMockData(FILTRT_TITLES);
 
