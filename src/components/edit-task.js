@@ -135,7 +135,7 @@ export default class TaskEdit {
   }
 
   getTemplate() {
-    return createAddTaskTemplate(this._taskEdit)
+    return createAddTaskTemplate(this._taskEdit);
   }
 
   getElement() {
