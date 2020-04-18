@@ -1,7 +1,7 @@
 import {getRandomItem, getRandomBoolean, generateRepeatingDays, getRandomDate} from "../utils";
 import {COLORS} from "../const";
 
-const TASK_COUNT = 20;
+const TASK_COUNT = 22;
 
 const DefaultRepeatingDays = {
   "mo": false,

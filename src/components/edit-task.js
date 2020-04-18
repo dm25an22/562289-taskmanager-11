@@ -1,5 +1,5 @@
 import {MONTH_NAMES, COLORS, DAYS} from '../const';
-import {formatTime} from '../utils';
+import {formatTime, createElement} from '../utils';
 
 const createRepeatingDaysMarkup = (days, repeatingDays) => {
   return days.map((day, index) => {
@@ -40,7 +40,7 @@ const createColorsMarkup = (colors, currentColor) => {
 };
 
 
-export const createAddTaskTemplate = (taskData) => {
+const createAddTaskTemplate = (taskData) => {
   const {color, description, dueDate, repeatingDays} = taskData;
 
   const colorsMarkup = createColorsMarkup(COLORS, color);
@@ -126,3 +126,28 @@ export const createAddTaskTemplate = (taskData) => {
     </article>`
   );
 };
+
+export default class TaskEdit {
+  constructor(taskEdit) {
+    this._taskEdit = taskEdit;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createAddTaskTemplate(this._taskEdit);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+
+}

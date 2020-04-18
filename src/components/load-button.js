@@ -1,26 +1,24 @@
 import {createElement} from "../utils";
 
-const createBoardTemplate = () => {
+const createLoadButton = () => {
   return (
-    `<section class="board container">  
-    </section>`
+    `<button class="load-more" type="button">load more</button>`
   );
 };
 
-export default class Board {
+export default class LoadButton {
   constructor() {
-    this.element = null;
+    this._element = null;
   }
 
   getTemplate() {
-    return createBoardTemplate();
+    return createLoadButton();
   }
 
   getElement() {
     if (!this._element) {
       this._element = createElement(this.getTemplate());
     }
-
     return this._element;
   }
 
@@ -29,4 +27,3 @@ export default class Board {
   }
 
 }
-
