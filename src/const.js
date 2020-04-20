@@ -18,9 +18,4 @@ const MONTH_NAMES = [
   `December`,
 ];
 
-const RenderPosition = {
-  AFTERBEGIN: `afterbegin`,
-  BEFOREEND: `beforeend`
-};
-
-export {COLORS, DAYS, FILTRT_TITLES, MONTH_NAMES, RenderPosition};
+export {COLORS, DAYS, FILTRT_TITLES, MONTH_NAMES};
