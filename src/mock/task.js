@@ -1,4 +1,4 @@
-import {getRandomItem, getRandomBoolean, generateRepeatingDays, getRandomDate} from "../utils";
+import {getRandomItem, getRandomBoolean, generateRepeatingDays, getRandomDate} from "../utils/common";
 import {COLORS} from "../const";
 
 const TASK_COUNT = 22;

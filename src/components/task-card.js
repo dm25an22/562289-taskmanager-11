@@ -1,5 +1,6 @@
 import {MONTH_NAMES} from '../const';
-import {formatTime, createElement} from '../utils';
+import {formatTime} from '../utils/common';
+import AbstractComponent from "./abstract_component";
 
 const createTaskCardTemplate = (taskData) => {
   const {color, description, isArchive, isFavorite, dueDate, repeatingDays} = taskData;
@@ -63,27 +64,19 @@ const createTaskCardTemplate = (taskData) => {
   );
 };
 
-export default class Task {
+export default class Task extends AbstractComponent {
   constructor(task) {
-    this._task = task;
+    super();
 
-    this._element = null;
+    this._task = task;
   }
 
   getTemplate() {
     return createTaskCardTemplate(this._task);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setEditButtonClickHandler(handler) {
+    this.getElement().querySelector(`.card__btn--edit`).addEventListener(`click`, handler);
   }
 
 }

@@ -1,5 +1,6 @@
 import {MONTH_NAMES, COLORS, DAYS} from '../const';
-import {formatTime, createElement} from '../utils';
+import {formatTime} from '../utils/common';
+import AbstractComponent from "./abstract_component";
 
 const createRepeatingDaysMarkup = (days, repeatingDays) => {
   return days.map((day, index) => {
@@ -127,27 +128,19 @@ const createAddTaskTemplate = (taskData) => {
   );
 };
 
-export default class TaskEdit {
+export default class TaskEdit extends AbstractComponent {
   constructor(taskEdit) {
-    this._taskEdit = taskEdit;
+    super();
 
-    this._element = null;
+    this._taskEdit = taskEdit;
   }
 
   getTemplate() {
     return createAddTaskTemplate(this._taskEdit);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setSubmitHandler(handler) {
+    this.getElement().querySelector(`form`).addEventListener(`submit`, handler);
   }
 
 }
