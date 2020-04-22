@@ -1,3 +1,5 @@
+import {SortType} from "../components/sort";
+
 const castTimeFormat = (value) => {
   return value < 10 ? `0${value}` : String(value);
 };
@@ -42,6 +44,26 @@ const getRandomDate = () => {
   return targetDate;
 };
 
+const getSortedTasks = (tasks, sortType, from, to) => {
+  const tasksCopy = [...tasks];
+  let sortedTasks = [];
+
+  switch (sortType) {
+    case SortType.DATE_UP:
+      sortedTasks = tasksCopy.sort((a, b) => a.dueDate - b.dueDate);
+      break;
+
+    case SortType.DATE_DOWN:
+      sortedTasks = tasksCopy.sort((a, b) => b.dueDate - a.dueDate);
+      break;
+
+    case SortType.DEFAULT:
+      sortedTasks = tasks;
+  }
+
+  return sortedTasks.slice(from, to);
+};
+
 export {
   formatTime,
   getRandomNumber,
@@ -49,5 +71,6 @@ export {
   getRandomBoolean,
   generateRepeatingDays,
   getRandomDate,
+  getSortedTasks
 };
 

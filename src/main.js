@@ -7,7 +7,6 @@ import {filterMock} from "./mock/filter";
 import {render, RenderPosition} from "./utils/render";
 import BoardController from "./controllers/board";
 
-
 const main = document.querySelector(`.main`);
 const mainControl = main.querySelector(`.main__control`);
 
