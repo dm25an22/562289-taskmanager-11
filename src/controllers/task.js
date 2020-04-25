@@ -25,11 +25,9 @@ export default class TaskController {
     this._taskEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
       this._replaceEditToTask();
-      document.removeEventListener(`keydown`, this._onEscKeyDown);
     });
 
     render(this._container, this._tasksCardComponent, RenderPosition.BEFOREEND);
-
   }
 
   _replaceTaskToEdit() {
@@ -38,6 +36,7 @@ export default class TaskController {
 
   _replaceEditToTask() {
     replace(this._tasksCardComponent, this._taskEditComponent);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   _onEscKeyDown(evt) {
@@ -49,3 +48,4 @@ export default class TaskController {
   }
 
 }
+
