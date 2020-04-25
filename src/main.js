@@ -18,3 +18,4 @@ const boardController = new BoardController(boardComponent);
 
 render(main, boardComponent, RenderPosition.BEFOREEND);
 boardController.render(taskData);
+console.log(boardController)
