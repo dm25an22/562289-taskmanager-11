@@ -25,14 +25,6 @@ const getRandomItem = (arr) => {
 
 const getRandomBoolean = () => Math.random() > 0.5;
 
-const generateRepeatingDays = (arrValues) => {
-  const randomDay = getRandomItem(arrValues);
-
-  return Object.assign({}, arrValues, {
-    [randomDay]: getRandomBoolean(),
-  });
-};
-
 const getRandomDate = () => {
   const targetDate = new Date();
   const sign = Math.random() > 0.5 ? 1 : -1;
@@ -69,7 +61,6 @@ export {
   getRandomNumber,
   getRandomItem,
   getRandomBoolean,
-  generateRepeatingDays,
   getRandomDate,
   getSortedTasks
 };
