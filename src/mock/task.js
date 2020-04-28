@@ -1,4 +1,4 @@
-import {getRandomItem, getRandomBoolean, generateRepeatingDays, getRandomDate} from "../utils/common";
+import {getRandomItem, getRandomBoolean, getRandomDate} from "../utils/common";
 import {COLORS} from "../const";
 
 const TASK_COUNT = 22;
@@ -11,6 +11,12 @@ const DefaultRepeatingDays = {
   "fr": false,
   "sa": false,
   "su": false,
+};
+
+const generateRepeatingDays = () => {
+  return Object.assign({}, DefaultRepeatingDays, {
+    "mo": Math.random() > 0.5,
+  });
 };
 
 const PropertyDefaultRepeatingDays = Object.keys(DefaultRepeatingDays);
