@@ -1,16 +1,13 @@
 import {SortType} from "../components/sort";
-
-const castTimeFormat = (value) => {
-  return value < 10 ? `0${value}` : String(value);
-};
+import moment from "moment";
 
 const formatTime = (date) => {
-  const hours = castTimeFormat(date.getHours());
-  const minutes = castTimeFormat(date.getMinutes());
-
-  return `${hours}:${minutes}`;
+  return moment(date).format(`hh:mm`);
 };
 
+export const formatDate = (date) => {
+  return moment(date).format(`DD MMMM`);
+};
 
 const getRandomNumber = (min, max) => {
   min = Math.ceil(min);

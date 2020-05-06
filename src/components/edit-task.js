@@ -1,6 +1,9 @@
-import {MONTH_NAMES, COLORS, DAYS} from '../const';
-import {formatTime} from '../utils/common';
+import {COLORS, DAYS} from '../const';
+import {formatTime, formatDate} from '../utils/common';
 import AbstractSmartComponent from "./abstract-smart-component";
+import flatpickr from "flatpickr";
+
+import "flatpickr/dist/flatpickr.min.css";
 
 const isRepeating = (repeatingDays) => {
   return Object.values(repeatingDays).some(Boolean);
@@ -54,7 +57,7 @@ const createAddTaskTemplate = (taskData, options = {}) => {
   const isBlockSaveButton = (isDateShowing && isRepeatingTask) ||
   (isRepeatingTask && !isRepeating(activeRepeatingDays));
 
-  const date = (isDateShowing && dueDate) ? `${dueDate.getDate()} ${MONTH_NAMES[dueDate.getMonth()]}` : ``;
+  const date = (isDateShowing && dueDate) ? formatDate(dueDate) : ``;
   const time = (isDateShowing && dueDate) ? formatTime(dueDate) : ``;
 
 
@@ -145,8 +148,10 @@ export default class TaskEdit extends AbstractSmartComponent {
     this._activeRepeatingDays = Object.assign({}, task.repeatingDays);
     this._color = task.color;
 
+    this._flatpickr = null;
     this._submitHandler = null;
     this._subscribeOnEvents();
+    this._applyFlatpickr();
   }
 
   getTemplate() {
@@ -163,8 +168,9 @@ export default class TaskEdit extends AbstractSmartComponent {
     this._subscribeOnEvents();
   }
 
-  reremder() {
+  rerender() {
     super.rerender();
+    this._applyFlatpickr();
   }
 
   reset() {
@@ -176,6 +182,25 @@ export default class TaskEdit extends AbstractSmartComponent {
     this._color = task.color;
 
     this.rerender();
+  }
+
+  _applyFlatpickr() {
+    if (this._flatpickr) {
+      this._flatpickr.destroy();
+      this._flatpickr = null;
+    }
+
+    if (this._isDateShowing) {
+      const dateElement = this.getElement().querySelector(`.card__date`);
+      const time = `time_24hr`;
+      this._flatpickr = flatpickr(dateElement, {
+        allowInput: true,
+        defaultDate: this._task.dueDate || `today`,
+        enableTime: true,
+        dateFormat: `d F H:i`,
+        [time]: true,
+      });
+    }
   }
 
   setSubmitHandler(handler) {
