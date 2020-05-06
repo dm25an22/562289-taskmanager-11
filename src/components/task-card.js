@@ -1,6 +1,7 @@
 import {MONTH_NAMES} from '../const';
 import {formatTime} from '../utils/common';
 import AbstractComponent from "./abstract_component";
+import {encode} from "he";
 
 const createButtonMarkup = (name, isActive = true) => {
   return (
@@ -16,6 +17,7 @@ const createButtonMarkup = (name, isActive = true) => {
 
 const createTaskCardTemplate = (taskData) => {
   const {color, description, dueDate, repeatingDays} = taskData;
+  const descriptionEncode = encode(description);
 
   const isExpired = dueDate instanceof Date && dueDate < Date.now();
   const isDateShowing = !!dueDate;
@@ -47,7 +49,7 @@ const createTaskCardTemplate = (taskData) => {
             </div>
 
             <div class="card__textarea-wrap">
-              <p class="card__text">${description}.</p>
+              <p class="card__text">${descriptionEncode}</p>
             </div>
 
             <div class="card__settings">
