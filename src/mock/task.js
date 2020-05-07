@@ -31,6 +31,7 @@ const generateMock = () => {
   const dueDate = getRandomBoolean() ? null : getRandomDate();
 
   return {
+    id: String(new Date() + Math.random()),
     color: getRandomItem(COLORS),
     description: getRandomItem(DescriptionItems),
     isArchive: getRandomBoolean(),

@@ -33,6 +33,10 @@ export default class Menu extends AbstractComponent {
     return this._currenSortType;
   }
 
+  resetSortType() {
+    this._currenSortType = SortType.DEFAULT;
+  }
+
   setSortTypeChangeHandler(handler) {
     this.getElement().addEventListener(`click`, (evt) => {
       evt.preventDefault();
@@ -48,7 +52,6 @@ export default class Menu extends AbstractComponent {
       }
 
       this._currenSortType = sortType;
-
       handler(this._currenSortType);
     });
 

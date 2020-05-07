@@ -2,11 +2,22 @@ import {SortType} from "../components/sort";
 import moment from "moment";
 
 const formatTime = (date) => {
-  return moment(date).format(`hh:mm`);
+  return moment(date).format(`HH:mm`);
 };
 
 export const formatDate = (date) => {
   return moment(date).format(`DD MMMM`);
+};
+
+export const isOverdueDate = (dueDate, date) => {
+  return dueDate < date && !isOneDay(dueDate, date);
+};
+
+export const isOneDay = (dateA, dateB) => {
+  const a = moment(dateA);
+  const b = moment(dateB);
+
+  return a.diff(b, `day`) === 0 && dateA.getDate() === dateB.getDate();
 };
 
 const getRandomNumber = (min, max) => {

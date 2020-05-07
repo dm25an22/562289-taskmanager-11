@@ -1,20 +1,35 @@
 import BoardComponent from "./components/board";
-import FilterComponent from "./components/filters";
-import MenuComponent from "./components/menu";
-
+import MenuComponent, {MenuItem} from "./components/menu";
+import TasksModel from "./models/tasks.js";
 import {taskData} from "./mock/task";
-import {filterMock} from "./mock/filter";
+import FilterController from "./controllers/filter.js";
 import {render, RenderPosition} from "./utils/render";
 import BoardController from "./controllers/board";
+
+const tasksModel = new TasksModel();
+tasksModel.setTasks(taskData);
 
 const main = document.querySelector(`.main`);
 const mainControl = main.querySelector(`.main__control`);
 
-render(mainControl, new MenuComponent(), RenderPosition.BEFOREEND);
-render(main, new FilterComponent(filterMock), RenderPosition.BEFOREEND);
+const menuComponent = new MenuComponent();
+render(mainControl, menuComponent, RenderPosition.BEFOREEND);
+
+const filterController = new FilterController(main, tasksModel);
+filterController.render();
 
 const boardComponent = new BoardComponent();
-const boardController = new BoardController(boardComponent);
-
 render(main, boardComponent, RenderPosition.BEFOREEND);
-boardController.render(taskData);
+
+const boardController = new BoardController(boardComponent, tasksModel, filterController);
+boardController.render();
+
+menuComponent.setOnChange((menuItem) => {
+  switch (menuItem) {
+    case MenuItem.NEW_TASK:
+      menuComponent.setActiveItem(MenuItem.TASKS);
+      boardController.createTask();
+      break;
+  }
+});
+

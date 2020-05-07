@@ -1,12 +1,21 @@
 import {COLORS, DAYS} from '../const';
 import {formatTime, formatDate} from '../utils/common';
 import AbstractSmartComponent from "./abstract-smart-component";
+import {encode} from "he";
 import flatpickr from "flatpickr";
-
 import "flatpickr/dist/flatpickr.min.css";
+
+const MIN_DESCRIPTION_LENGTH = 1;
+const MAX_DESCRIPTION_LENGTH = 140;
+
 
 const isRepeating = (repeatingDays) => {
   return Object.values(repeatingDays).some(Boolean);
+};
+
+const isAllowableDescriptionLength = (description) => {
+  const length = description.length;
+  return length >= MIN_DESCRIPTION_LENGTH && length <= MAX_DESCRIPTION_LENGTH;
 };
 
 const createRepeatingDaysMarkup = (days, repeatingDays) => {
@@ -49,13 +58,14 @@ const createColorsMarkup = (colors, currentColor) => {
 
 
 const createAddTaskTemplate = (taskData, options = {}) => {
-  const {description, dueDate} = taskData;
-  const {isDateShowing, isRepeatingTask, activeRepeatingDays, color} = options;
+  // const {dueDate} = taskData;
+  const {isDateShowing, isRepeatingTask, activeRepeatingDays, color, currentDescription, dueDate} = options;
 
+  const description = encode(currentDescription);
   const isExpired = dueDate instanceof Date && dueDate < Date.now();
 
   const isBlockSaveButton = (isDateShowing && isRepeatingTask) ||
-  (isRepeatingTask && !isRepeating(activeRepeatingDays));
+  (isRepeatingTask && !isRepeating(activeRepeatingDays)) || !isAllowableDescriptionLength(description);
 
   const date = (isDateShowing && dueDate) ? formatDate(dueDate) : ``;
   const time = (isDateShowing && dueDate) ? formatTime(dueDate) : ``;
@@ -105,6 +115,7 @@ const createAddTaskTemplate = (taskData, options = {}) => {
                     />
                   </label>
                 </fieldset>` : ``}
+  
 
                 <button class="card__repeat-toggle" type="button">
                   repeat:<span class="card__repeat-status">${isRepeatingTask ? `yes` : `no`}</span>
@@ -137,6 +148,26 @@ const createAddTaskTemplate = (taskData, options = {}) => {
   );
 };
 
+const dataParse = (formData) => {
+  const objRepeatDefault = DAYS.reduce((acc, day) => {
+    acc[day] = false;
+    return acc;
+  }, {});
+
+  const date = formData.get(`date`);
+
+  return {
+    dueDate: date ? new Date(date) : null,
+    repeatingDays: formData.getAll(`repeat`).reduce((acc, day) => {
+      acc[day] = true;
+      return acc;
+    }, objRepeatDefault),
+    color: formData.get(`color`),
+    description: formData.get(`text`)
+  };
+};
+
+
 export default class TaskEdit extends AbstractSmartComponent {
   constructor(task) {
     super();
@@ -147,9 +178,12 @@ export default class TaskEdit extends AbstractSmartComponent {
     this._isRepeatingTask = Object.values(task.repeatingDays).some(Boolean);
     this._activeRepeatingDays = Object.assign({}, task.repeatingDays);
     this._color = task.color;
+    this._currentDescription = task.description;
+    this._dueDate = task.dueDate;
 
     this._flatpickr = null;
     this._submitHandler = null;
+    this._deleteButtonClickHandler = null;
     this._subscribeOnEvents();
     this._applyFlatpickr();
   }
@@ -160,12 +194,15 @@ export default class TaskEdit extends AbstractSmartComponent {
       isRepeatingTask: this._isRepeatingTask,
       activeRepeatingDays: this._activeRepeatingDays,
       color: this._color,
+      currentDescription: this._currentDescription,
+      dueDate: this._dueDate,
     });
   }
 
   recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);
     this._subscribeOnEvents();
+    this.setDeleteButtonClickHandler(this._deleteButtonClickHandler);
   }
 
   rerender() {
@@ -180,6 +217,7 @@ export default class TaskEdit extends AbstractSmartComponent {
     this._isRepeatingTask = Object.values(task.repeatingDays).some(Boolean);
     this._activeRepeatingDays = Object.assign({}, task.repeatingDays);
     this._color = task.color;
+    this._currentDescription = task.description;
 
     this.rerender();
   }
@@ -195,12 +233,14 @@ export default class TaskEdit extends AbstractSmartComponent {
       const time = `time_24hr`;
       this._flatpickr = flatpickr(dateElement, {
         allowInput: true,
-        defaultDate: this._task.dueDate || `today`,
+        altInput: true,
+        defaultDate: this._dueDate || `today`,
         enableTime: true,
-        dateFormat: `d F H:i`,
+        altFormat: `d F H:i`,
         [time]: true,
       });
     }
+
   }
 
   setSubmitHandler(handler) {
@@ -209,8 +249,30 @@ export default class TaskEdit extends AbstractSmartComponent {
     this._submitHandler = handler;
   }
 
+  getData() {
+    const element = this.getElement().querySelector(`form`);
+    const formData = new FormData(element);
+
+    return dataParse(formData);
+  }
+
   _subscribeOnEvents() {
     const element = this.getElement();
+
+    element.querySelector(`.card__text`)
+      .addEventListener(`input`, (evt) => {
+        this._currentDescription = evt.target.value;
+
+        const saveButton = this.getElement().querySelector(`.card__save`);
+        saveButton.disabled = !isAllowableDescriptionLength(this._currentDescription);
+      });
+
+    if (this._isDateShowing) {
+      element.querySelector(`.card__date`).addEventListener(`input`, (evt) => {
+
+        this._dueDate = new Date(evt.target.value);
+      });
+    }
 
     element.querySelector(`.card__date-deadline-toggle`)
       .addEventListener(`click`, () => {
@@ -235,9 +297,16 @@ export default class TaskEdit extends AbstractSmartComponent {
     element.querySelector(`.card__colors-wrap`)
       .addEventListener(`change`, (evt) => {
         this._color = evt.target.value;
+
         this.rerender();
       });
 
+  }
+
+  setDeleteButtonClickHandler(handler) {
+    this.getElement().querySelector(`.card__delete`)
+      .addEventListener(`click`, handler);
+    this._deleteButtonClickHandler = handler;
   }
 
 }
