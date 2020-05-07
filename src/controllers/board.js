@@ -1,5 +1,5 @@
 import {render, RenderPosition, remove} from "../utils/render";
-import SortComponent from "../components/sort";
+import SortComponent, {SortType} from "../components/sort";
 import NoTaskComponent from "../components/no-task";
 import LoadMoreButtonComponent from "../components/load-button";
 import TaskController, {Mode as TaskControllerMode, EmptyTask} from "../controllers/task";
@@ -117,15 +117,21 @@ export default class BoardController {
     if (this._creatingTask) {
       return;
     }
+
+    this._onSortTypeChange(SortType.DEFAULT);
     this._filterController.resetFilter();
     this._sortComponent.resetSortType();
-    this._updateTasks(this._showingTasksCount);
     this._onViewChange();
     this._creatingTask = new TaskController(this._tasksComponent.getElement(), this._onDataChange, this._onViewChange);
     this._creatingTask.render(EmptyTask, TaskControllerMode.ADDING);
+    this._showedTaskControllers = [].concat(this._creatingTask, this._showedTaskControllers);
   }
 
   _onViewChange() {
+    if (this._creatingTask) {
+      this._updateTasks(this._showingTasksCount);
+      this._creatingTask = null;
+    }
     this._showedTaskControllers.forEach((it) => it.setDefaultView());
   }
 
@@ -159,6 +165,10 @@ export default class BoardController {
   }
 
   _onSortTypeChange(sortType) {
+    if (this._creatingTask) {
+      this._creatingTask = null;
+    }
+
     this._showingTasksCount = SHOWING_TASKS_COUNT_BY_BUTTON;
     this._removeTasks();
 
@@ -169,6 +179,10 @@ export default class BoardController {
   }
 
   _onFilterChange() {
+    if (this._creatingTask) {
+      this._creatingTask = null;
+    }
+
     this._sortComponent.resetSortType();
     this._updateTasks();
   }

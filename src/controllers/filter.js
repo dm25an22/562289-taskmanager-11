@@ -14,7 +14,7 @@ export default class FilterController {
 
     this._onDataFilterChange = this._onDataFilterChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
-    this._tasksModel.setDataChangeHandlers(this._onDataFilterChange); // пушит callback в модель в обзервер изменения данных
+    this._tasksModel.setDataChangeHandlers(this._onDataFilterChange);
   }
 
   render() {
@@ -30,11 +30,9 @@ export default class FilterController {
     });
 
     const oldComponent = this._filterComponent;
-    
 
     this._filterComponent = new FilterComponent(filters);
-    this._filterComponent.setFilterChangeHandler(this._onFilterChange); // пушит callback в модель в обзервер изменения фильтров
-
+    this._filterComponent.setFilterChangeHandler(this._onFilterChange);
     if (oldComponent) {
       replace(this._filterComponent, oldComponent);
     } else {
@@ -44,6 +42,9 @@ export default class FilterController {
   }
 
   resetFilter() {
+    if (this._activeFilterType === FilterType.ALL) {
+      return;
+    }
     this._activeFilterType = FilterType.ALL;
     this._tasksModel.setFilter(FilterType.ALL);
     this.render();
@@ -51,10 +52,10 @@ export default class FilterController {
 
   _onFilterChange(filterName) {
     this._activeFilterType = filterName;
-    this._tasksModel.setFilter(filterName);  // fn callback 
+    this._tasksModel.setFilter(filterName);
   }
 
-  _onDataFilterChange() { // fn callback  
+  _onDataFilterChange() {
     this.render();
   }
 

@@ -13,11 +13,11 @@ const FILTRT_TITLES = [`all`, `overdue`, `today`, `favorites`, `repeating`, `arc
 
 const FilterType = {
   ALL: `all`,
-  ARCHIVE: `archive`,
-  FAVORITES: `favorites`,
   OVERDUE: `overdue`,
-  REPEATING: `repeating`,
   TODAY: `today`,
+  FAVORITES: `favorites`,
+  REPEATING: `repeating`,
+  ARCHIVE: `archive`,
 };
 
 const MONTH_NAMES = [

@@ -1,4 +1,5 @@
 import {FilterType} from "../const.js";
+import {isOneDay, isOverdueDate} from "../utils/common";
 
 
 export const getArchiveTasks = (tasks) => {
@@ -17,15 +18,23 @@ export const getRepeatingTasks = (tasks) => {
   return tasks.filter((task) => Object.values(task.repeatingDays).some(Boolean));
 };
 
-export const getTodayTasks = (tasks) => {
-  return tasks.filter((it) => it.dueDate && it.dueDate.getDate() === new Date().getDate());
+export const getTodayTasks = (tasks, date) => {
+  return tasks.filter((it) => isOneDay(it.dueDate, date));
 };
 
-export const getOverdueTasks = (tasks) => {
-  return tasks.filter((it) => it.dueDate && it.dueDate < new Date());
+export const getOverdueTasks = (tasks, date) => {
+  return tasks.filter((it) => {
+    if (!it.dueDate) {
+      return false;
+    }
+
+    return isOverdueDate(it.dueDate, date);
+  });
 };
 
 export const getTasksByFilter = (allTasks, filterName) => {
+  const date = new Date();
+
   switch (filterName) {
     case FilterType.ALL:
       return getNotArchiveTasks(allTasks);
@@ -40,10 +49,10 @@ export const getTasksByFilter = (allTasks, filterName) => {
       return getRepeatingTasks(allTasks);
 
     case FilterType.TODAY:
-      return getTodayTasks(allTasks);
-    
+      return getTodayTasks(allTasks, date);
+
     case FilterType.OVERDUE:
-      return getOverdueTasks(allTasks);
+      return getOverdueTasks(allTasks, date);
   }
 
   return allTasks;
