@@ -41,6 +41,10 @@ export default class FilterController {
 
   }
 
+  getFilterType() {
+    return this._activeFilterType;
+  }
+
   resetFilter() {
     if (this._activeFilterType === FilterType.ALL) {
       return;

@@ -22,10 +22,11 @@ export const EmptyTask = {
 };
 
 export default class TaskController {
-  constructor(container, onDataChange, onViewChange) {
+  constructor(container, onDataChange, onViewChange, onFilterChange) {
     this._container = container;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
+    this._onFilterChange = onFilterChange;
 
     this._tasksCardComponent = null;
     this._taskEditComponent = null;
@@ -52,19 +53,27 @@ export default class TaskController {
     this._taskEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
       const data = this._taskEditComponent.getData();
-      this._onDataChange(this, task, data);
+      this._onDataChange(this, task, Object.assign({}, task, {
+        dueDate: data.dueDate,
+        repeatingDays: data.repeatingDays,
+        color: data.color,
+        description: data.description
+      }));
+      this._onFilterChange();
     });
 
     this._tasksCardComponent._setArchiveButtonClickHandler(() => {
       this._onDataChange(this, task, Object.assign({}, task, {
         isArchive: !task.isArchive
       }));
+      this._onFilterChange();
     });
 
     this._tasksCardComponent._setFavoritesButtonClickHandler(() => {
       this._onDataChange(this, task, Object.assign({}, task, {
         isFavorite: !task.isFavorite
       }));
+      this._onFilterChange();
     });
 
     switch (mode) {
