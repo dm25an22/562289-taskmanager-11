@@ -2,6 +2,7 @@ import TaskEditComponent from "../components/edit-task";
 import TasksCardComponent from "../components/task-card";
 import {render, RenderPosition, replace, remove} from "../utils/render";
 import {DAYS, COLOR} from "../const";
+import TaskModel from "../models/task";
 
 export const Mode = {
   ADDING: `adding`,
@@ -19,6 +20,27 @@ export const EmptyTask = {
   color: COLOR.BLACK,
   isArchive: false,
   isFavorite: false
+};
+
+const dataParse = (formData) => {
+  const repeatingDays = DAYS.reduce((acc, day) => {
+    acc[day] = false;
+    return acc;
+  }, {});
+
+  const date = formData.get(`date`);
+
+  return new TaskModel({
+    "description": formData.get(`text`),
+    "due_date": date ? new Date(date) : null,
+    "repeating_days": formData.getAll(`repeat`).reduce((acc, it) => {
+      acc[it] = true;
+      return acc;
+    }, repeatingDays),
+    "color": formData.get(`color`),
+    "is_favorite": false,
+    "is_done": false,
+  });
 };
 
 export default class TaskController {
@@ -51,20 +73,22 @@ export default class TaskController {
 
     this._taskEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-      const data = this._taskEditComponent.getData();
+      const formData = this._taskEditComponent.getData();
+      const data = dataParse(formData);
       this._onDataChange(this, task, data);
     });
 
     this._tasksCardComponent._setArchiveButtonClickHandler(() => {
-      this._onDataChange(this, task, Object.assign({}, task, {
-        isArchive: !task.isArchive
-      }));
+      const newTask = TaskModel.clone(task);
+      newTask.isArchive = !newTask.isArchive;
+      this._onDataChange(this, task, newTask);
     });
 
     this._tasksCardComponent._setFavoritesButtonClickHandler(() => {
-      this._onDataChange(this, task, Object.assign({}, task, {
-        isFavorite: !task.isFavorite
-      }));
+      const newTask = TaskModel.clone(task);
+      newTask.isFavorite = !newTask.isFavorite;
+
+      this._onDataChange(this, task, newTask);
     });
 
     switch (mode) {

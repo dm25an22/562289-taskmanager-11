@@ -58,7 +58,6 @@ const createColorsMarkup = (colors, currentColor) => {
 
 
 const createAddTaskTemplate = (taskData, options = {}) => {
-  // const {dueDate} = taskData;
   const {isDateShowing, isRepeatingTask, activeRepeatingDays, color, currentDescription, dueDate} = options;
 
   const description = encode(currentDescription);
@@ -148,25 +147,6 @@ const createAddTaskTemplate = (taskData, options = {}) => {
   );
 };
 
-const dataParse = (formData) => {
-  const objRepeatDefault = DAYS.reduce((acc, day) => {
-    acc[day] = false;
-    return acc;
-  }, {});
-
-  const date = formData.get(`date`);
-
-  return {
-    dueDate: date ? new Date(date) : null,
-    repeatingDays: formData.getAll(`repeat`).reduce((acc, day) => {
-      acc[day] = true;
-      return acc;
-    }, objRepeatDefault),
-    color: formData.get(`color`),
-    description: formData.get(`text`)
-  };
-};
-
 
 export default class TaskEdit extends AbstractSmartComponent {
   constructor(task) {
@@ -251,9 +231,8 @@ export default class TaskEdit extends AbstractSmartComponent {
 
   getData() {
     const element = this.getElement().querySelector(`form`);
-    const formData = new FormData(element);
 
-    return dataParse(formData);
+    return new FormData(element);
   }
 
   _subscribeOnEvents() {

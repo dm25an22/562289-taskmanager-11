@@ -25,6 +25,7 @@ export default class Tasks {
   }
 
   updateTask(oldId, newTask) {
+
     const index = this._tasks.findIndex((it) => it.id === oldId);
 
     if (index === -1) {

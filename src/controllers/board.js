@@ -19,10 +19,11 @@ const renderTasks = (taskListElement, tasks, onDataChange, onViewChange) => {
 };
 
 export default class BoardController {
-  constructor(container, tasksModel, filterController) {
+  constructor(container, tasksModel, filterController, api) {
     this._container = container;
 
     this._tasksModel = tasksModel;
+    this._api = api;
     this._showedTaskControllers = [];
     this._creatingTask = null;
 
@@ -105,11 +106,17 @@ export default class BoardController {
       this._tasksModel.removeTask(oldData.id);
       this._updateTasks();
     } else {
-      const isSuccess = this._tasksModel.updateTask(oldData.id, newData);
+      this._api.updateTasks(oldData.id, newData)
+        .then((taskModel) => {
+          const isSuccess = this._tasksModel.updateTask(oldData.id, taskModel);
 
-      if (isSuccess) {
-        taskController.render(newData, TaskControllerMode.DEFAULT);
-      }
+          if (isSuccess) {
+            taskController.render(taskModel, TaskControllerMode.DEFAULT);
+
+            this._updateTasks();
+          }
+        });
+
     }
   }
 
@@ -124,7 +131,7 @@ export default class BoardController {
     this._onViewChange();
     this._creatingTask = new TaskController(this._tasksComponent.getElement(), this._onDataChange, this._onViewChange);
     this._creatingTask.render(EmptyTask, TaskControllerMode.ADDING);
-    this._showedTaskControllers = [].concat(this._creatingTask, this._showedTaskControllers);
+    // this._showedTaskControllers = [].concat(this._creatingTask, this._showedTaskControllers);
   }
 
   _onViewChange() {
