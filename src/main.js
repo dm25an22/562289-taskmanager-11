@@ -24,7 +24,7 @@ const boardController = new BoardController(boardComponent, tasksModel, filterCo
 render(mainControl, menuComponent, RenderPosition.BEFOREEND);
 filterController.render();
 render(main, boardComponent, RenderPosition.BEFOREEND);
-render(boardComponent.getElement(), noTaskComponent, RenderPosition.BEFOREEND)
+render(boardComponent.getElement(), noTaskComponent, RenderPosition.BEFOREEND);
 
 menuComponent.setOnChange((menuItem) => {
   switch (menuItem) {
