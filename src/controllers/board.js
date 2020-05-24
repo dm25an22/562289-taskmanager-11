@@ -81,30 +81,41 @@ export default class BoardController {
   }
 
   _onDataChange(taskController, oldData, newData) {
-
     if (oldData === EmptyTask) {
       this._creatingTask = null;
       if (newData === null) {
         taskController.destroy();
         this._updateTasks();
       } else {
-        this._tasksModel.addTask(newData);
-        taskController.render(newData, TaskControllerMode.DEFAULT);
+        this._api.createTask(newData)
+          .then((taskModule) => {
+            this._tasksModel.addTask(taskModule);
+            taskController.render(taskModule, TaskControllerMode.DEFAULT);
 
-        this._showedTaskControllers = [].concat(taskController, this._showedTaskControllers);
+            this._showedTaskControllers = [].concat(taskController, this._showedTaskControllers);
 
-        if (this._showedTaskControllers.length > 8) {
-          const destroyedTask = this._showedTaskControllers.pop();
-          destroyedTask.destroy();
-        }
+            if (this._showedTaskControllers.length > 8) {
+              const destroyedTask = this._showedTaskControllers.pop();
+              destroyedTask.destroy();
+            }
 
-        this._showingTasksCount = this._showedTaskControllers.length;
+            this._showingTasksCount = this._showedTaskControllers.length;
 
-        this._renderLoadMoreButton();
+            this._renderLoadMoreButton();
+          })
+          .catch(() => {
+            taskController.shake();
+          });
       }
     } else if (newData === null) {
-      this._tasksModel.removeTask(oldData.id);
-      this._updateTasks();
+      this._api.deleteTask(oldData.id)
+        .then(() => {
+          this._tasksModel.removeTask(oldData.id);
+          this._updateTasks();
+        })
+        .catch(() => {
+          taskController.shake();
+        });
     } else {
       this._api.updateTasks(oldData.id, newData)
         .then((taskModel) => {
@@ -115,8 +126,10 @@ export default class BoardController {
 
             this._updateTasks();
           }
+        })
+        .catch(() => {
+          taskController.shake();
         });
-
     }
   }
 
@@ -129,9 +142,9 @@ export default class BoardController {
     this._filterController.resetFilter();
     this._sortComponent.resetSortType();
     this._onViewChange();
+
     this._creatingTask = new TaskController(this._tasksComponent.getElement(), this._onDataChange, this._onViewChange);
     this._creatingTask.render(EmptyTask, TaskControllerMode.ADDING);
-    // this._showedTaskControllers = [].concat(this._creatingTask, this._showedTaskControllers);
   }
 
   _onViewChange() {
