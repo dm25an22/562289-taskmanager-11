@@ -8,8 +8,9 @@ import BoardController from "./controllers/board";
 import NoTaskComponent from "./components/no-task";
 
 const AUTHORIZATION = `Basic aldas#ponnsad`;
+const END_POINT = `https://11.ecmascript.pages.academy/task-manager`;
 
-const api = new API(AUTHORIZATION);
+const api = new API(END_POINT, AUTHORIZATION);
 const tasksModel = new TasksModel();
 
 const main = document.querySelector(`.main`);

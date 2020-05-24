@@ -4,10 +4,18 @@ import {render, RenderPosition, replace, remove} from "../utils/render";
 import {DAYS, COLOR} from "../const";
 import TaskModel from "../models/task";
 
+
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
 export const Mode = {
   ADDING: `adding`,
   DEFAULT: `default`,
   EDIT: `edit`,
+};
+
+const color = {
+  BLACK: `black`,
+  RED: `red`
 };
 
 export const EmptyTask = {
@@ -65,7 +73,10 @@ export default class TaskController {
     this._tasksCardComponent = new TasksCardComponent(task);
     this._taskEditComponent = new TaskEditComponent(task);
 
-    this._taskEditComponent.setDeleteButtonClickHandler(() => this._onDataChange(this, task, null));
+    this._taskEditComponent.setDeleteButtonClickHandler(() => {
+      this._taskEditComponent.setData({deleteButtonText: `Deleting...`});
+      this._onDataChange(this, task, null);
+    });
 
     this._tasksCardComponent.setEditButtonClickHandler(() => {
       this._replaceTaskToEdit();
@@ -75,6 +86,9 @@ export default class TaskController {
       evt.preventDefault();
       const formData = this._taskEditComponent.getData();
       const data = dataParse(formData);
+      this._taskEditComponent.setData({saveButtonText: `Saving...`});
+      this._taskEditComponent.blockForm();
+      this._taskEditComponent.borderEdit(color.BLACK);
       this._onDataChange(this, task, data);
     });
 
@@ -87,7 +101,6 @@ export default class TaskController {
     this._tasksCardComponent._setFavoritesButtonClickHandler(() => {
       const newTask = TaskModel.clone(task);
       newTask.isFavorite = !newTask.isFavorite;
-
       this._onDataChange(this, task, newTask);
     });
 
@@ -111,6 +124,24 @@ export default class TaskController {
         render(this._container, this._taskEditComponent, RenderPosition.AFTERBEGIN);
         break;
     }
+
+  }
+
+  shake() {
+    this._tasksCardComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._taskEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this._tasksCardComponent.getElement().style.animation = ``;
+      this._taskEditComponent.getElement().style.animation = ``;
+
+
+      this._taskEditComponent.setData({
+        saveButtonText: `Save`,
+        deleteButtonText: `Delete`,
+      });
+      this._taskEditComponent.borderEdit(color.RED);
+    }, SHAKE_ANIMATION_TIMEOUT);
 
   }
 

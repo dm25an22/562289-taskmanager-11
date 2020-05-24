@@ -8,6 +8,10 @@ import "flatpickr/dist/flatpickr.min.css";
 const MIN_DESCRIPTION_LENGTH = 1;
 const MAX_DESCRIPTION_LENGTH = 140;
 
+const DefaultData = {
+  deleteButtonText: `Delete`,
+  saveButtonText: `Save`,
+};
 
 const isRepeating = (repeatingDays) => {
   return Object.values(repeatingDays).some(Boolean);
@@ -57,8 +61,8 @@ const createColorsMarkup = (colors, currentColor) => {
 };
 
 
-const createAddTaskTemplate = (taskData, options = {}) => {
-  const {isDateShowing, isRepeatingTask, activeRepeatingDays, color, currentDescription, dueDate} = options;
+const createAddTaskTemplate = (options = {}) => {
+  const {isDateShowing, isRepeatingTask, activeRepeatingDays, color, currentDescription, dueDate, externalData} = options;
 
   const description = encode(currentDescription);
   const isExpired = dueDate instanceof Date && dueDate < Date.now();
@@ -75,6 +79,9 @@ const createAddTaskTemplate = (taskData, options = {}) => {
 
   const colorsMarkup = createColorsMarkup(COLORS, color);
   const repeatingDaysMarkup = createRepeatingDaysMarkup(DAYS, activeRepeatingDays);
+
+  const deleteButtonText = externalData.deleteButtonText;
+  const saveButtonText = externalData.saveButtonText;
 
   return (
     `<article class="card card--edit card--${color} ${repeatClass} ${deadlineClass}">
@@ -138,8 +145,8 @@ const createAddTaskTemplate = (taskData, options = {}) => {
           </div>
 
           <div class="card__status-btns">
-            <button class="card__save" type="submit" ${isBlockSaveButton ? `disabled` : ``}>save</button>
-            <button class="card__delete" type="button">delete</button>
+            <button class="card__save" type="submit" ${isBlockSaveButton ? `disabled` : ``}>${saveButtonText}</button>
+            <button class="card__delete" type="button">${deleteButtonText}</button>
           </div>
         </div>
       </form>
@@ -161,6 +168,7 @@ export default class TaskEdit extends AbstractSmartComponent {
     this._currentDescription = task.description;
     this._dueDate = task.dueDate;
 
+    this._externalData = DefaultData;
     this._flatpickr = null;
     this._submitHandler = null;
     this._deleteButtonClickHandler = null;
@@ -169,13 +177,15 @@ export default class TaskEdit extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createAddTaskTemplate(this._task, {
+    return createAddTaskTemplate({
       isDateShowing: this._isDateShowing,
       isRepeatingTask: this._isRepeatingTask,
       activeRepeatingDays: this._activeRepeatingDays,
       color: this._color,
       currentDescription: this._currentDescription,
       dueDate: this._dueDate,
+      externalData: this._externalData,
+      test: this._test
     });
   }
 
@@ -188,6 +198,22 @@ export default class TaskEdit extends AbstractSmartComponent {
   rerender() {
     super.rerender();
     this._applyFlatpickr();
+  }
+
+  setData(data) {
+    this._externalData = Object.assign({}, DefaultData, data);
+    this.rerender();
+  }
+
+  borderEdit(color) {
+    this.getElement().querySelector(`.card__inner`).style.borderColor = color;
+  }
+
+  blockForm() {
+    const elementsCollection = this.getElement().querySelector(`.card__form`).elements;
+    Array.from(elementsCollection).forEach((el) => {
+      el.disabled = true;
+    });
   }
 
   reset() {
