@@ -49,10 +49,10 @@ export default class BoardController {
     const isAllTasksArchived = tasks.every((it) => it.isArchive);
     const boardComponent = this._container.getElement();
 
-    if (isAllTasksArchived) {
-      render(boardComponent, this._noTaskComponent, RenderPosition.BEFOREEND);
-      return;
-    }
+    // if (isAllTasksArchived) {
+    //   render(boardComponent, this._noTaskComponent, RenderPosition.BEFOREEND);
+    //   return;
+    // }
 
     render(boardComponent, this._sortComponent, RenderPosition.BEFOREEND);
     render(boardComponent, this._tasksComponent, RenderPosition.BEFOREEND);

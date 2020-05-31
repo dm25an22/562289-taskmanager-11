@@ -1,4 +1,4 @@
-import Task from "./models/task";
+import Task from "../models/task";
 
 const checkStatus = (response) => {
   if (response.status >= 200 && response.status < 300) {

@@ -17,14 +17,17 @@
     "style-loader": "1.2.1",
     "webpack": "4.42.1",
     "webpack-cli": "3.3.11",
-    "webpack-dev-server": "3.10.3"
+    "webpack-dev-server": "^3.11.0"
   },
   "engines": {
     "node": "10"
   },
   "dependencies": {
-    "flatpickr": "^4.6.3",
-    "he": "^1.2.0",
-    "moment": "^2.25.3"
+    "chart.js": "2.9.3",
+    "chartjs-plugin-datalabels": "0.7.0",
+    "flatpickr": "4.6.3",
+    "he": "1.2.0",
+    "moment": "^2.25.3",
+    "nanoid": "3.1.9"
   }
 }
